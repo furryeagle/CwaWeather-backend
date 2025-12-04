@@ -16,11 +16,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 /**
- * 取得高雄天氣預報
+ * 取得臺中天氣預報 👈 修改：函式說明
  * CWA 氣象資料開放平臺 API
  * 使用「一般天氣預報-今明 36 小時天氣預報」資料集
  */
-const getKaohsiungWeather = async (req, res) => {
+const getTaichungWeather = async (req, res) => { // 👈 修改：函式名稱
   try {
     // 檢查是否有設定 API Key
     if (!CWA_API_KEY) {
@@ -37,18 +37,18 @@ const getKaohsiungWeather = async (req, res) => {
       {
         params: {
           Authorization: CWA_API_KEY,
-          locationName: "臺中市",
+          locationName: "臺中市", // 👈 查詢參數：已確認為「臺中市」
         },
       }
     );
 
-    // 取得高雄市的天氣資料
+    // 取得臺中市的天氣資料 👈 修改：城市名稱
     const locationData = response.data.records.location[0];
 
     if (!locationData) {
       return res.status(404).json({
         error: "查無資料",
-        message: "無法取得高雄市天氣資料",
+        message: "無法取得臺中市天氣資料", // 👈 修改：城市名稱
       });
     }
 
@@ -131,7 +131,7 @@ app.get("/", (req, res) => {
   res.json({
     message: "歡迎使用 CWA 天氣預報 API",
     endpoints: {
-      Kaohsiung: "/api/weather/kaohsiung",
+      Taichung: "/api/weather/taichung", // 👈 修改：路由清單
       health: "/api/health",
     },
   });
@@ -141,8 +141,8 @@ app.get("/api/health", (req, res) => {
   res.json({ status: "OK", timestamp: new Date().toISOString() });
 });
 
-// 取得高雄天氣預報
-app.get("/api/weather/kaohsiung", getKaohsiungWeather);
+// 取得臺中天氣預報 👈 修改：路由說明
+app.get("/api/weather/taichung", getTaichungWeather); // 👈 修改：路由路徑和函式名稱
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -163,4 +163,5 @@ app.use((req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 伺服器運行已運作`);
   console.log(`📍 環境: ${process.env.NODE_ENV || "development"}`);
+  console.log(`📡 臺中天氣 API 路由: http://localhost:${PORT}/api/weather/taichung`); // 增加提示
 });
